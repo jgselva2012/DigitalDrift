@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Copywriting Service</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>AI Copywriting Service</h1>
+        <form id="copyForm" class="form-group">
+            <label for="prompt">Enter Prompt:</label>
+            <textarea id="prompt" name="prompt" class="form-control"></textarea>
+            <button type="submit" class="btn btn-primary mt-3">Generate Copy</button>
+        </form>
+        <div id="result" class="mt-4"></div>
+    </div>
+
+    <script>
+        document.getElementById("copyForm").addEventListener("submit", async function(event) {
+            event.preventDefault();
+            const prompt = document.getElementById("prompt").value;
+
+            const response = await fetch("/generate-copy", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ prompt: prompt })
+            });
+
+            const data = await response.json();
+            document.getElementById("result").innerHTML = "<h3>Generated Copy:</h3>" + data.copy;
+        });
+    </script>
+</body>
+</html>
