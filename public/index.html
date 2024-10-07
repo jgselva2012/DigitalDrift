@@ -11,7 +11,8 @@
         <h1>AI Copywriting Service</h1>
         <form id="copyForm" class="form-group">
             <label for="prompt">Enter Prompt:</label>
-            <textarea id="prompt" name="prompt" class="form-control"></textarea>
+            <textarea id="prompt" name="prompt" class="form-control" rows="4"></textarea>
+            <small id="error-message" class="text-danger" style="display: none;">Please enter a prompt.</small>
             <button type="submit" class="btn btn-primary mt-3">Generate Copy</button>
         </form>
         <div id="result" class="mt-4"></div>
@@ -21,17 +22,38 @@
         document.getElementById("copyForm").addEventListener("submit", async function(event) {
             event.preventDefault();
             const prompt = document.getElementById("prompt").value;
+            const errorMessage = document.getElementById("error-message");
 
-            const response = await fetch("/generate-copy", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ prompt: prompt })
-            });
+            // Clear previous results and hide error message
+            document.getElementById("result").innerHTML = "";
+            errorMessage.style.display = "none";
 
-            const data = await response.json();
-            document.getElementById("result").innerHTML = "<h3>Generated Copy:</h3>" + data.copy;
+            // Input validation: check if prompt is empty
+            if (!prompt.trim()) {
+                errorMessage.style.display = "block";
+                return;
+            }
+
+            try {
+                const response = await fetch("/generate-copy", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ prompt: prompt })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to generate copy.');
+                }
+
+                const data = await response.json();
+                document.getElementById("result").innerHTML = "<h3>Generated Copy:</h3>" + data.copy;
+
+            } catch (error) {
+                // Display error message if API call fails
+                document.getElementById("result").innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+            }
         });
     </script>
 </body>
