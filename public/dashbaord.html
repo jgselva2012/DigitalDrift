@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Your Copywriting History</h1>
+        <div id="copyHistory" class="mt-4"></div>
+    </div>
+
+    <script>
+        async function fetchCopyHistory() {
+            try {
+                const response = await fetch('/copy-history', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'  // Ensure session is included in the request
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch copy history. Please log in.');
+                }
+
+                const copyHistory = await response.json();
+                const copyHistoryContainer = document.getElementById('copyHistory');
+
+                if (copyHistory.length === 0) {
+                    copyHistoryContainer.innerHTML = '<p>You have no saved copywriting history.</p>';
+                } else {
+                    copyHistory.forEach(item => {
+                        const historyItem = document.createElement('div');
+                        historyItem.classList.add('mb-4');
+                        historyItem.innerHTML = `
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Prompt:</h5>
+                                    <p>${item.prompt}</p>
+                                    <h5 class="card-title">Generated Copy:</h5>
+                                    <p>${item.generated_copy}</p>
+                                    <small class="text-muted">Saved on: ${new Date(item.created_at).toLocaleString()}</small>
+                                </div>
+                            </div>
+                        `;
+                        copyHistoryContainer.appendChild(historyItem);
+                    });
+                }
+
+            } catch (error) {
+                document.getElementById('copyHistory').innerHTML = `<div class="alert alert-danger">${error.message}</div>`;
+            }
+        }
+
+        // Fetch copy history on page load
+        window.onload = fetchCopyHistory;
+    </script>
+</body>
+</html>
