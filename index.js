@@ -4,6 +4,7 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const { Pool } = require('pg'); // PostgreSQL client
+const path = require('path'); // For serving static files
 const app = express();
 
 // Connect to PostgreSQL (replace with your DATABASE_URL from Heroku or local)
@@ -15,6 +16,9 @@ const pool = new Pool({
 // Middleware for parsing JSON and form data
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// Serve static files from the public folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Session and Passport middleware
 app.use(session({
@@ -135,8 +139,17 @@ app.get('/copy-history', (req, res) => {
   });
 });
 
-// Protected dashboard route
+// Serve the user dashboard
 app.get('/dashboard', (req, res) => {
+  if (req.isAuthenticated()) {
+    res.sendFile(path.join(__dirname, 'public/dashboard.html'));
+  } else {
+    res.redirect('/login'); // Redirect to login if not authenticated
+  }
+});
+
+// Protected dashboard route (API example)
+app.get('/dashboard-api', (req, res) => {
   if (req.isAuthenticated()) {
     res.json({ message: `Welcome, ${req.user.username}!` });
   } else {
