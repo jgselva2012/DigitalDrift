@@ -1,0 +1,20 @@
+{
+  "name": "ai-copywriting-service",
+  "description": "An AI-powered copywriting service",
+  "scripts": {
+    "postdeploy": "npm install"
+  },
+  "env": {
+    "OPENAI_API_KEY": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+    "heroku-postgresql"
+  ]
+}
