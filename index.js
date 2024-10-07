@@ -1,4 +1,4 @@
-const express = require('express');
+retconst express = require('express');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Session and Passport middleware
 app.use(session({
-  secret: 'your_secret_key', // Change this to your own secret key
+  secret: 'secret', // Change this to your own secret key
   resave: false,
   saveUninitialized: true
 }));
